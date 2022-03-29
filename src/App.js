@@ -44,6 +44,16 @@ const App = () => {
   const [postBody, setPostBody] = useState('');
   const history = useHistory();
 
+  useEffect(() => {
+    const filteredResults = posts.filter((post) => {
+      return (
+        post.body.toLowerCase().includes(search) ||
+        post.title.toLowerCase().includes(search)
+      );
+    });
+    setSearchResults(filteredResults.reverse());
+  }, [posts, search]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const id = posts.length ? posts[posts.length - 1].id + 1 : 1;
@@ -68,7 +78,7 @@ const App = () => {
       <Nav search={search} setSearch={setSearch} />
       <Switch>
         <Route exact path='/'>
-          <Home posts={posts} />
+          <Home posts={searchResults} />
         </Route>
         <Route exact path='/post'>
           <NewPost
