@@ -8,6 +8,7 @@ import PostPage from './PostPage';
 import About from './About';
 import Missing from './Missing';
 
+import { format } from 'date-fns';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
 const App = () => {
@@ -39,10 +40,27 @@ const App = () => {
   ]);
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [postTitle, setPostTitle] = useState('');
+  const [postBody, setPostBody] = useState('');
+  const history = useHistory();
 
-  const handleDelete = (id)=>{
-    
-  }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const id = posts.length ? posts[posts.length - 1].id + 1 : 1;
+    const datetime = format(new Date(), 'MMMM dd, yyyy pp');
+    const newPost = { id, title: postTitle, datetime, body: postBody };
+    const allPosts = [...posts, newPost];
+    setPosts(allPosts);
+    setPostTitle('');
+    setPostBody('');
+    history.push('/');
+  };
+
+  const handleDelete = (id) => {
+    const postLists = posts.filter((post) => post.id !== id);
+    setPosts(postLists);
+    history.push('/');
+  };
 
   return (
     <div className='App'>
@@ -53,7 +71,13 @@ const App = () => {
           <Home posts={posts} />
         </Route>
         <Route exact path='/post'>
-          <NewPost />
+          <NewPost
+            handleSubmit={handleSubmit}
+            postTitle={postTitle}
+            setPostTitle={setPostTitle}
+            postBody={postBody}
+            setPostBody={setPostBody}
+          />
         </Route>
         <Route path='/post/:id'>
           <PostPage posts={posts} handleDelete={handleDelete} />
